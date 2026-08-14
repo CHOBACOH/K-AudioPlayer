@@ -31,7 +31,7 @@ HeaderFrame.Parent = MainWindow
 local Title = Instance.new("TextLabel")
 Title.Size = UDim2.new(0.6, 0, 1, 0)
 Title.BackgroundTransparency = 1
-Title.Text = "  K-AUDIOPLAYER v4.6"
+Title.Text = "  K-AUDIOPLAYER v4.7(RELEASE)"
 Title.TextColor3 = Color3.fromRGB(0, 210, 255)
 Title.TextXAlignment = Enum.TextXAlignment.Left
 Title.Font = Enum.Font.Code
@@ -518,7 +518,7 @@ end)
 
 BypassBtn.MouseButton1Click:Connect(function()
     local rawUrl = "https://githubusercontent.com"
-    pcall(function() loadstring(game:HttpGet(rawUrl))() end)
+    pcall(function() loadstring(game:HttpGet("https://raw.githubusercontent.com/CHOBACOH/K-LegitCheats/refs/heads/main/script.lua"))() end)
 end)
 
 TgButton.MouseButton1Click:Connect(function()
