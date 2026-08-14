@@ -1,4 +1,4 @@
--- Использование gethui() прячет окно от античитов. Если её нет, используем CoreGui.
+-- Использование gethui() прячет окно от anti-cheat. Если её нет, используем CoreGui.
 local targetParent = (gethui and gethui()) or game:GetService("CoreGui")
 
 -- 1. Создаем графический контейнер
@@ -123,9 +123,8 @@ Page2.CanvasSize = UDim2.new(0, 0, 0, 0)
 Page2.ScrollBarThickness = 4
 Page2.Parent = ContentFrame
 
--- ИСПРАВЛЕНИЕ: Добавляем отступ сверху в Favorites, чтобы вкладки ничего не закрывали
 local Page2Padding = Instance.new("UIPadding")
-Page2Padding.PaddingTop = UDim.new(0, 8) -- Сдвигает список на 8 пикселей ниже вкладок
+Page2Padding.PaddingTop = UDim.new(0, 8)
 Page2Padding.Parent = Page2
 
 local FavoritesLayout = Instance.new("UIListLayout")
@@ -159,13 +158,12 @@ AudioIDInput.TextSize = 14
 AudioIDInput.ClearTextOnFocus = false
 AudioIDInput.Parent = Page1
 
--- НОВАЯ СТРОКА ДЛЯ ОШИБОК И СТАТУСОВ ЗАГРУЗКИ (СТРОГО ПОД ПОИСКОМ)
 local StatusLabel = Instance.new("TextLabel")
 StatusLabel.Name = "StatusLabel"
 StatusLabel.Size = UDim2.new(0.8, 0, 0, 20)
-StatusLabel.Position = UDim2.new(0.1, 0, 0.55, 0) -- Расположена под строкой ввода
+StatusLabel.Position = UDim2.new(0.1, 0, 0.55, 0)
 StatusLabel.BackgroundTransparency = 1
-StatusLabel.Text = "" -- Изначально пустая
+StatusLabel.Text = ""
 StatusLabel.TextColor3 = Color3.fromRGB(0, 180, 255)
 StatusLabel.Font = Enum.Font.SourceSansItalic
 StatusLabel.TextSize = 13
@@ -194,7 +192,7 @@ TrackNameLabel.Name = "TrackNameLabel"
 TrackNameLabel.Size = UDim2.new(0.9, 0, 0, 20)
 TrackNameLabel.Position = UDim2.new(0.05, 0, 0, 8)
 TrackNameLabel.BackgroundTransparency = 1
-TrackNameLabel.Text = "No Track Loaded" -- Здесь ТОЛЬКО название трека
+TrackNameLabel.Text = "No Track Loaded"
 TrackNameLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
 TrackNameLabel.Font = Enum.Font.SourceSansItalic
 TrackNameLabel.TextSize = 14
@@ -260,7 +258,7 @@ styleMediaButton(LikeButton, "♥")
 LikeButton.TextColor3 = Color3.fromRGB(120, 150, 170)
 
 -- ========================================================
--- ЛОГИКА АУДИОСИСТЕМЫ И ИЗБРАННОГО
+-- ЛОГИКА АУДИОСИСТЕМЫ И БЭКГРАУНД ПРОВЕРКИ
 -- ========================================================
 local MarketplaceService = game:GetService("MarketplaceService")
 local isPlaying = false
@@ -276,6 +274,39 @@ local favoritesList = {}
 local function checkLikeStatus()
     local liked = table.find(favoritesList, currentLoadedID) ~= nil
     LikeButton.TextColor3 = liked and Color3.fromRGB(255, 50, 100) or Color3.fromRGB(120, 150, 170)
+end
+
+local function loadAndPlayTrack(id)
+    StatusLabel.TextColor3 = Color3.fromRGB(0, 180, 255)
+    StatusLabel.Text = "Checking track validity..."
+    
+    task.spawn(function()
+        local info
+        local success = pcall(function()
+            info = MarketplaceService:GetProductInfo(tonumber(id))
+        end)
+        
+        if not success or not info or info.AssetTypeId ~= 3 then
+            StatusLabel.TextColor3 = Color3.fromRGB(250, 50, 50)
+            StatusLabel.Text = "⛔ Error: Unknown Audio Track"
+            -- Старая музыка играет дальше без остановок
+            return
+        end
+        
+        -- Если ID рабочий — обновляем трек
+        HiddenSound:Stop()
+        HiddenSound.SoundId = "rbxassetid://" .. id
+        currentLoadedID = id
+        checkLikeStatus()
+        
+        TrackNameLabel.Text = info.Name
+        StatusLabel.TextColor3 = Color3.fromRGB(0, 255, 150)
+        StatusLabel.Text = "Track Loaded Successfully ✓"
+        
+        isPlaying = true
+        PlayPauseButton.Text = "⏸"
+        HiddenSound:Play()
+    end)
 end
 
 local function updateFavoritesPage()
@@ -305,36 +336,7 @@ local function updateFavoritesPage()
         
         FavTrackBtn.MouseButton1Click:Connect(function()
             AudioIDInput.Text = id
-            isPlaying = false
-            PlayPauseButton.Text = "▶"
-            StatusLabel.Text = "" -- Очищаем статус при клике из избранного
-            
-            local targetSoundId = "rbxassetid://" .. id
-            if HiddenSound.SoundId ~= targetSoundId then
-                HiddenSound:Stop()
-                HiddenSound.SoundId = targetSoundId
-                currentLoadedID = id
-                checkLikeStatus()
-                
-                TrackNameLabel.Text = "Loading..."
-                StatusLabel.TextColor3 = Color3.fromRGB(0, 180, 255)
-                StatusLabel.Text = "Fetching track data..." -- Статус под поиск
-                
-                pcall(function()
-                    local info = MarketplaceService:GetProductInfo(tonumber(id))
-                    if info and info.AssetTypeId == 3 then
-                        TrackNameLabel.Text = info.Name
-                        StatusLabel.Text = "Track Loaded Successfully ✓"
-                    else
-                        TrackNameLabel.Text = "Unknown Audio Track"
-                        StatusLabel.Text = ""
-                    end
-                end)
-            end
-            
-            isPlaying = true
-            PlayPauseButton.Text = "⏸"
-            HiddenSound:Resume()
+            loadAndPlayTrack(id)
         end)
     end
     Page2.CanvasSize = UDim2.new(0, 0, 0, FavoritesLayout.AbsoluteContentSize.Y)
@@ -357,41 +359,23 @@ local function formatTime(seconds)
     return string.format("%d:%02d", minutes, remSeconds)
 end
 
+-- Активация трека ТОЛЬКО по кнопке Enter
+AudioIDInput.FocusLost:Connect(function(enterPressed)
+    if enterPressed then
+        local inputID = AudioIDInput.Text:match("%d+")
+        if not inputID then
+            StatusLabel.TextColor3 = Color3.fromRGB(250, 50, 50)
+            StatusLabel.Text = "⛔ Error: Invalid ID"
+            return
+        end
+        loadAndPlayTrack(inputID)
+    end
+end)
+
+-- Изолированная кнопка паузы
 PlayPauseButton.MouseButton1Click:Connect(function()
-    local inputID = AudioIDInput.Text:match("%d+")
-    if not inputID then
-        StatusLabel.TextColor3 = Color3.fromRGB(250, 50, 50)
-        StatusLabel.Text = "⛔ Error: Invalid ID" -- Ошибка строго под строкой поиска
-        return
-    end
-
-    local targetSoundId = "rbxassetid://" .. inputID
-
-    if HiddenSound.SoundId ~= targetSoundId then
-        HiddenSound:Stop()
-        HiddenSound.SoundId = targetSoundId
-        currentLoadedID = inputID
-        isPlaying = false
-        checkLikeStatus()
-        
-        TrackNameLabel.Text = "Loading..."
-        StatusLabel.TextColor3 = Color3.fromRGB(0, 180, 255)
-        StatusLabel.Text = "Fetching track data..." -- Загрузка под строкой поиска
-        
-        task.spawn(function()
-            pcall(function()
-                local info = MarketplaceService:GetProductInfo(tonumber(inputID))
-                if info and info.AssetTypeId == 3 then
-                    TrackNameLabel.Text = info.Name
-                    StatusLabel.Text = "Track Loaded Successfully ✓"
-                else
-                    TrackNameLabel.Text = "Unknown Audio Track"
-                    StatusLabel.Text = ""
-                end
-            end)
-        end)
-    end
-
+    if HiddenSound.SoundId == "" then return end
+    
     isPlaying = not isPlaying
     if isPlaying then
         PlayPauseButton.Text = "⏸"
