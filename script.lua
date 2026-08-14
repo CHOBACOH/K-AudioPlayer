@@ -208,169 +208,178 @@ BypassBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
 BypassBtn.Font = Enum.Font.Code
 BypassBtn.TextSize = 10
 BypassBtn.Parent = Page3
-
 local TgButton = Instance.new("TextButton")
 TgButton.Name = "TgButton"
 TgButton.Size = UDim2.new(0.3, 0, 0, 30)
 TgButton.Position = UDim2.new(0.65, 0, 0.45, 0)
-TgButton.BackgroundColor3 = Color3.fromRGB(15, 40, 60)
+TgButton.BackgroundColor3 = Color3.fromRGB(20, 35, 50)
 TgButton.BorderSizePixel = 1
-TgButton.BorderColor3 = Color3.fromRGB(0, 150, 220)
+TgButton.BorderColor3 = Color3.fromRGB(0, 180, 255)
 TgButton.Text = "🔗 Telegram"
-TgButton.TextColor3 = Color3.fromRGB(0, 210, 255)
+TgButton.TextColor3 = Color3.fromRGB(255, 255, 255)
 TgButton.Font = Enum.Font.Code
-TgButton.TextSize = 11
-TgButton.Parent = Page3 -- ========================================================
--- СКВОЗНАЯ НИЖНЯЯ ПАНЕЛЬ K-AUDIOPLAYER С НАЗВАНИЕМ И ВРЕМЕНЕМ
--- ========================================================
+TgButton.TextSize = 10
+TgButton.Parent = Page3
+
+-- БЛОК УПРАВЛЕНИЯ ПЛЕЕРОМ
 local PlayerControls = Instance.new("Frame")
 PlayerControls.Name = "PlayerControls"
-PlayerControls.Size = UDim2.new(1, 0, 0, 95)
-PlayerControls.Position = UDim2.new(0, 0, 1, -95)
-PlayerControls.BackgroundColor3 = Color3.fromRGB(12, 20, 30)
+PlayerControls.Size = UDim2.new(1, 0, 0, 65)
+PlayerControls.Position = UDim2.new(0, 0, 1, -65)
+PlayerControls.BackgroundColor3 = Color3.fromRGB(10, 18, 26)
 PlayerControls.BorderSizePixel = 0
 PlayerControls.Parent = MainWindow
 
-local SeparatorLine = Instance.new("Frame")
-SeparatorLine.Name = "SeparatorLine"
-SeparatorLine.Size = UDim2.new(1, 0, 0, 1)
-SeparatorLine.Position = UDim2.new(0, 0, 0, 0)
-SeparatorLine.BackgroundColor3 = Color3.fromRGB(0, 120, 200)
-SeparatorLine.BorderSizePixel = 0
-SeparatorLine.Parent = PlayerControls
-
 local TrackNameLabel = Instance.new("TextLabel")
-TrackNameLabel.Name = "TrackNameLabel"
-TrackNameLabel.Size = UDim2.new(0.9, 0, 0, 20)
-TrackNameLabel.Position = UDim2.new(0.05, 0, 0, 8)
+TrackNameLabel.Size = UDim2.new(0.9, 0, 0, 15)
+TrackNameLabel.Position = UDim2.new(0.05, 0, 0.05, 0)
 TrackNameLabel.BackgroundTransparency = 1
 TrackNameLabel.Text = "No Track Loaded"
-TrackNameLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
-TrackNameLabel.Font = Enum.Font.SourceSansItalic
-TrackNameLabel.TextSize = 14
+TrackNameLabel.TextColor3 = Color3.fromRGB(150, 180, 200)
+TrackNameLabel.Font = Enum.Font.Code
+TrackNameLabel.TextSize = 11
+TrackNameLabel.TextXAlignment = Enum.TextXAlignment.Center
 TrackNameLabel.Parent = PlayerControls
 
 local TimeLabel = Instance.new("TextLabel")
-TimeLabel.Name = "TimeLabel"
 TimeLabel.Size = UDim2.new(0.9, 0, 0, 15)
-TimeLabel.Position = UDim2.new(0.05, 0, 0, 28)
+TimeLabel.Position = UDim2.new(0.05, 0, 0.3, 0)
 TimeLabel.BackgroundTransparency = 1
 TimeLabel.Text = "0:00 / 0:00"
-TimeLabel.TextColor3 = Color3.fromRGB(0, 150, 220)
+TimeLabel.TextColor3 = Color3.fromRGB(100, 130, 150)
 TimeLabel.Font = Enum.Font.Code
-TimeLabel.TextSize = 12
+TimeLabel.TextSize = 10
+TimeLabel.TextXAlignment = Enum.TextXAlignment.Center
 TimeLabel.Parent = PlayerControls
 
 local ButtonHolder = Instance.new("Frame")
 ButtonHolder.Name = "ButtonHolder"
-ButtonHolder.Size = UDim2.new(0.9, 0, 0, 35)
-ButtonHolder.Position = UDim2.new(0.05, 0, 0, 48)
+ButtonHolder.Size = UDim2.new(0.9, 0, 0, 25)
+ButtonHolder.Position = UDim2.new(0.05, 0, 0.55, 0)
 ButtonHolder.BackgroundTransparency = 1
-ButtonHolder.Parent = ButtonHolder
+ButtonHolder.Parent = PlayerControls 
 
-local function styleMediaButton(btn, text)
-    btn.BackgroundColor3 = Color3.fromRGB(18, 30, 45)
-    btn.BorderSizePixel = 1
-    btn.BorderColor3 = Color3.fromRGB(0, 120, 200)
-    btn.Text = text
-    btn.TextColor3 = Color3.fromRGB(0, 210, 255)
-    btn.Font = Enum.Font.SourceSansBold
-    btn.TextSize = 18
-    btn.Parent = ButtonHolder
-end
-
+-- ТЕПЕРЬ LOOP BUTTON НАХОДИТСЯ НА САМОМ ПЕРВОМ МЕСТЕ СЛЕВА (Position = 0)
 local LoopButton = Instance.new("TextButton")
-LoopButton.Size = UDim2.new(0, 35, 1, 0)
+LoopButton.Name = "LoopButton"
+LoopButton.Size = UDim2.new(0.2, 0, 1, 0)
 LoopButton.Position = UDim2.new(0, 0, 0, 0)
-styleMediaButton(LoopButton, "↻")
+LoopButton.BackgroundTransparency = 1
+LoopButton.Text = "🔁"
 LoopButton.TextColor3 = Color3.fromRGB(120, 150, 170)
+LoopButton.Font = Enum.Font.Code
+LoopButton.TextSize = 14
+LoopButton.Parent = ButtonHolder
 
+-- REWIND СДВИНУЛСЯ НА ВТОРОЕ МЕСТО (Position = 0.2)
 local RewindButton = Instance.new("TextButton")
-RewindButton.Size = UDim2.new(0, 40, 1, 0)
-RewindButton.Position = UDim2.new(0.5, -70, 0, 0)
-styleMediaButton(RewindButton, "◀◀")
+RewindButton.Name = "RewindButton"
+RewindButton.Size = UDim2.new(0.2, 0, 1, 0)
+RewindButton.Position = UDim2.new(0.2, 0, 0, 0)
+RewindButton.BackgroundTransparency = 1
+RewindButton.Text = "⏮"
+RewindButton.TextColor3 = Color3.fromRGB(120, 150, 170)
+RewindButton.Font = Enum.Font.Code
+RewindButton.TextSize = 16
+RewindButton.Parent = ButtonHolder
 
+-- PLAY/PAUSE НА ТРЕТЬЕМ МЕСТЕ (Position = 0.4)
 local PlayPauseButton = Instance.new("TextButton")
-PlayPauseButton.Size = UDim2.new(0, 50, 1, 0)
-PlayPauseButton.Position = UDim2.new(0.5, -25, 0, 0)
-styleMediaButton(PlayPauseButton, "▶")
-PlayPauseButton.BackgroundColor3 = Color3.fromRGB(20, 45, 65)
-PlayPauseButton.BorderColor3 = Color3.fromRGB(0, 200, 255)
-PlayPauseButton.TextSize = 22
+PlayPauseButton.Name = "PlayPauseButton"
+PlayPauseButton.Size = UDim2.new(0.2, 0, 1, 0)
+PlayPauseButton.Position = UDim2.new(0.4, 0, 0, 0)
+PlayPauseButton.BackgroundTransparency = 1
+PlayPauseButton.Text = "▶"
+PlayPauseButton.TextColor3 = Color3.fromRGB(0, 210, 255)
+PlayPauseButton.Font = Enum.Font.Code
+PlayPauseButton.TextSize = 16
+PlayPauseButton.Parent = ButtonHolder
 
+-- FAST FORWARD НА ЧЕТВЕРТОМ МЕСТЕ (Position = 0.6)
 local FastForwardButton = Instance.new("TextButton")
-FastForwardButton.Size = UDim2.new(0, 40, 1, 0)
-FastForwardButton.Position = UDim2.new(0.5, 30, 0, 0)
-styleMediaButton(FastForwardButton, "▶▶")
+FastForwardButton.Name = "FastForwardButton"
+FastForwardButton.Size = UDim2.new(0.2, 0, 1, 0)
+FastForwardButton.Position = UDim2.new(0.6, 0, 0, 0)
+FastForwardButton.BackgroundTransparency = 1
+FastForwardButton.Text = "⏭"
+FastForwardButton.TextColor3 = Color3.fromRGB(120, 150, 170)
+FastForwardButton.Font = Enum.Font.Code
+FastForwardButton.TextSize = 16
+FastForwardButton.Parent = ButtonHolder
 
+-- LIKE BUTTON НА ПЯТОМ МЕСТЕ (Position = 0.8)
 local LikeButton = Instance.new("TextButton")
-LikeButton.Size = UDim2.new(0, 35, 1, 0)
-LikeButton.Position = UDim2.new(1, -35, 0, 0)
-styleMediaButton(LikeButton, "♥")
+LikeButton.Name = "LikeButton"
+LikeButton.Size = UDim2.new(0.2, 0, 1, 0)
+LikeButton.Position = UDim2.new(0.8, 0, 0, 0)
+LikeButton.BackgroundTransparency = 1
+LikeButton.Text = "☆"
 LikeButton.TextColor3 = Color3.fromRGB(120, 150, 170)
+LikeButton.Font = Enum.Font.Code
+LikeButton.TextSize = 16
+LikeButton.Parent = ButtonHolder
 
 -- ========================================================
--- ФАЙЛОВАЯ СИСТЕМА ДЛЯ DELTA (УСТРОЙСТВО ХАКЕРА)
+-- СЕРВИСЫ И НЕОБХОДИМЫЕ ПЕРЕМЕННЫЕ
 -- ========================================================
 local MarketplaceService = game:GetService("MarketplaceService")
 local HttpService = game:GetService("HttpService")
+
 local isPlaying = false
 local isLooping = false
-
-local HiddenSound = Instance.new("Sound")
-HiddenSound.Name = "KAudioPlayer_SoundSource"
-HiddenSound.Parent = game:GetService("SoundService")
-
-local currentLoadedID = "142376088"
+local currentLoadedID = ""
 local favoritesList = {}
 
-if makefolder and isfolder then
-    if not isfolder("K-AudioPlayer") then
-        makefolder("K-AudioPlayer")
+local HiddenSound = Instance.new("Sound")
+HiddenSound.Name = "KAudio_HiddenSound"
+HiddenSound.Volume = 1
+HiddenSound.Parent = game:GetService("Workspace")
+
+local function saveFavoritesToFile()
+    if writefile then
+        pcall(function()
+            writefile("kaudioplayer_favs.json", HttpService:JSONEncode(favoritesList))
+        end)
     end
 end
 
 local function loadFavoritesFromFile()
-    if readfile and isfile and isfile("K-AudioPlayer/favorites.txt") then
-        local success, data = pcall(function() 
-            return HttpService:JSONDecode(readfile("K-AudioPlayer/favorites.txt")) 
+    if readfile and isfile and isfile("kaudioplayer_favs.json") then
+        pcall(function()
+            favoritesList = HttpService:JSONDecode(readfile("kaudioplayer_favs.json"))
         end)
-        if success and type(data) == "table" then favoritesList = data end
-    end
-end
-
-local function saveFavoritesToFile()
-    if writefile then
-        pcall(function() 
-            writefile("K-AudioPlayer/favorites.txt", HttpService:JSONEncode(favoritesList)) 
-        end)
+    else
+        favoritesList = {"142376088", "183787472"}
     end
 end
 
 local function checkLikeStatus()
-    local liked = table.find(favoritesList, currentLoadedID) ~= nil
-    LikeButton.TextColor3 = liked and Color3.fromRGB(255, 50, 100) or Color3.fromRGB(120, 150, 170)
+    if table.find(favoritesList, currentLoadedID) then
+        LikeButton.Text = "★"
+        LikeButton.TextColor3 = Color3.fromRGB(255, 215, 0)
+    else
+        LikeButton.Text = "☆"
+        LikeButton.TextColor3 = Color3.fromRGB(120, 150, 170)
+    end
 end
 
-local function loadAndPlayTrack(id)
+local function loadAndPlayTrack(audioID)
+    currentLoadedID = tostring(audioID)
     StatusLabel.TextColor3 = Color3.fromRGB(0, 180, 255)
-    StatusLabel.Text = "Checking track validity..."
+    StatusLabel.Text = "Loading Track Audio..."
     
     task.spawn(function()
-        local info
-        local success = pcall(function() info = MarketplaceService:GetProductInfo(tonumber(id)) end)
+        local success, info = pcall(function()
+            return MarketplaceService:GetProductInfo(tonumber(audioID))
+        end)
         
-        if not success or not info or info.AssetTypeId ~= 3 then
+        if not success or not info then
             StatusLabel.TextColor3 = Color3.fromRGB(250, 50, 50)
-            StatusLabel.Text = "⛔ Error: Unknown Audio Track"
+            StatusLabel.Text = "⛔ Error: Asset Info Failed"
             return
         end
         
-        HiddenSound:Stop()
-        HiddenSound.SoundId = "rbxassetid://" .. id
-        currentLoadedID = id
-        checkLikeStatus()
-        
+        HiddenSound.SoundId = "rbxassetid://" .. audioID
         TrackNameLabel.Text = info.Name
         StatusLabel.TextColor3 = Color3.fromRGB(0, 255, 150)
         StatusLabel.Text = "Track Loaded Successfully ✓"
@@ -378,9 +387,10 @@ local function loadAndPlayTrack(id)
         isPlaying = true
         PlayPauseButton.Text = "⏸"
         HiddenSound:Play()
+        checkLikeStatus()
     end)
 end
-
+-- Функция обновления графической страницы избранного
 local function updateFavoritesPage()
     for _, item in ipairs(Page2:GetChildren()) do if item:IsA("TextButton") then item:Destroy() end end
     
@@ -454,10 +464,17 @@ task.spawn(function()
     end
 end)
 
+-- ОБНОВЛЕННАЯ ЛОГИКА ДЛЯ ИНДИКАЦИИ ПОВТОРА
 LoopButton.MouseButton1Click:Connect(function()
     isLooping = not isLooping
     HiddenSound.Looped = isLooping
-    LoopButton.TextColor3 = isLooping and Color3.fromRGB(0, 255, 150) or Color3.fromRGB(120, 150, 170)
+    if isLooping then
+        LoopButton.Text = "🔂"
+        LoopButton.TextColor3 = Color3.fromRGB(0, 255, 150) -- Неоново-зеленый (включен)
+    else
+        LoopButton.Text = "🔁"
+        LoopButton.TextColor3 = Color3.fromRGB(120, 150, 170) -- Исходный серый (выключен)
+    end
 end)
 
 RewindButton.MouseButton1Click:Connect(function()
@@ -492,11 +509,18 @@ VolSlider.MouseButton1Down:Connect(function()
     local sliderWidth = VolSlider.AbsoluteSize.X
     local startX = VolSlider.AbsolutePosition.X
     local relativeX = math.clamp(mouse.X - startX, 0, sliderWidth)
-    local volumePercent = relativeX / sliderWidth BypassBtn.MouseButton1Click:Connect(function()
+    local volumePercent = relativeX / sliderWidth
+    
+    VolBar.Size = UDim2.new(volumePercent, 0, 1, 0)
+    HiddenSound.Volume = volumePercent
+    VolLabel.Text = "Volume: " .. math.round(volumePercent * 100) .. "%"
+end)
+
+BypassBtn.MouseButton1Click:Connect(function()
     local rawUrl = "https://githubusercontent.com"
     pcall(function() loadstring(game:HttpGet(rawUrl))() end)
-    end)
 end)
+
 TgButton.MouseButton1Click:Connect(function()
     if setclipboard then
         setclipboard("://tg.com")
