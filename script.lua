@@ -1,11 +1,12 @@
 -- =============================================================================
--- ADVANCED K-AUDIO PLAYER v2.0 (СИСТЕМА ВКЛАДОК И ИЗБРАННОГО)
+-- FIX ADVANCED K-AUDIO PLAYER v2.1 (ИСПРАВЛЕНА ОШИБКА БЛОКИРОВКИ КОРНЕВОГО UI)
 -- =============================================================================
-local CoreGui = game:GetService("CoreGui")
 local Players = game:GetService("Players")
 local SoundService = game:GetService("SoundService")
 
 local LocalPlayer = Players.LocalPlayer
+-- ИСПРАВЛЕНИЕ: Используем PlayerGui вместо заблокированного CoreGui
+local PlayerGui = LocalPlayer:WaitForChild("PlayerGui")
 
 -- Таблица для хранения избранных треков (изначально пустая)
 local favorites = {}
@@ -26,7 +27,8 @@ bgm.Parent = SoundService
 -- 1. ГЛАВНЫЙ ИНТЕРФЕЙС
 local ScreenGui = Instance.new("ScreenGui")
 ScreenGui.Name = "KevinRadioAdvancedMenu"
-ScreenGui.Parent = CoreGui
+ScreenGui.ResetOnSpawn = false -- Меню не пропадет, если персонаж Кевина умрет
+ScreenGui.Parent = PlayerGui
 
 local MainFrame = Instance.new("Frame")
 MainFrame.Size = UDim2.new(0, 300, 0, 340)
@@ -279,7 +281,11 @@ end)
 LikeBtn.MouseButton1Click:Connect(function()
 if currentAudioId ~= "" then
 -- Проверяем, нет ли уже этого ID в таблице
-local found = false
-for _, id in ipairs(favorites) do
-if id == currentAudioId then found = true break endendif not found thentable.insert(favorites, currentAudioId)currentTrackIndex = #favoritesrefreshFavoritesUI()-- Анимация кнопкиLikeBtn.BackgroundColor3 = Color3.fromRGB(200, 50, 100)task.delay(0.3, function() LikeBtn.BackgroundColor3 = Color3.fromRGB(50, 35, 45) end)endendend)-- Переключатель RANDOM (Shuffle)ShuffleBtn.MouseButton1Click:Connect(function()isShuffle = not isShuffleShuffleBtn.Text = isShuffle and "RANDOM: ON" or "RANDOM: OFF"ShuffleBtn.BackgroundColor3 = isShuffle and Color3.fromRGB(0, 120, 200) or Color3.fromRGB(40, 40, 50)end)-- Переключатель LOOP (Повтор)LoopBtn.MouseButton1Click:Connect(function()isLoop = not isLoopbgm.Looped = isLoopLoopBtn.Text = isLoop and "LOOP: ON" or "LOOP: OFF"LoopBtn.BackgroundColor3 = isLoop and Color3.fromRGB(0, 120, 200) or Color3.fromRGB(40, 40, 50)end)-- Навигация: Следующий трек (>>)NextBtn.MouseButton1Click:Connect(function()if #favorites == 0 then return endif isShuffle thencurrentTrackIndex = math.random(1, #favorites)elsecurrentTrackIndex = currentTrackIndex + 1if currentTrackIndex > #favorites then currentTrackIndex = 1 endendplayAudio(favorites[currentTrackIndex])end)-- Навигация: Предыдущий трек (<<)PrevBtn.MouseButton1Click:Connect(function()if #favorites == 0 then return endcurrentTrackIndex = currentTrackIndex - 1if currentTrackIndex < 1 then currentTrackIndex = #favorites endplayAudio(favorites[currentTrackIndex])end)-- Автопереключение при окончанииbgm.Ended:Connect(function()if isLoop then return endif #favorites > 0 thenif isShuffle thencurrentTrackIndex = math.random(1, #favorites)elsecurrentTrackIndex = currentTrackIndex + 1if currentTrackIndex > #favorites then currentTrackIndex = 1 endendplayAudio(favorites[currentTrackIndex])elsePlayBtn.Text = "PLAY"PlayBtn.BackgroundColor3 = Color3.fromRGB(0, 150, 0)endend)
-
+local found = falsefor _, id in ipairs(favorites) doif id == currentAudioId then found = true break endendif not found thentable.insert(favorites, currentAudioId)currentTrackIndex = #favoritesrefreshFavoritesUI() 
+-- Анимация кнопки
+LikeBtn.BackgroundColor3 = Color3.fromRGB(200, 50, 100)task.delay(0.3, function() LikeBtn.BackgroundColor3 = Color3.fromRGB(50, 35, 45) end)endendend) 
+-- Переключатель RANDOM (Shuffle)ShuffleBtn.MouseButton1Click:Connect(function()isShuffle = not isShuffleShuffleBtn.Text = isShuffle and "RANDOM: ON" or "RANDOM: OFF"ShuffleBtn.BackgroundColor3 = isShuffle and Color3.fromRGB(0, 120, 200) or Color3.fromRGB(40, 40, 50)end) 
+-- Переключатель LOOP (Повтор)LoopBtn.MouseButton1Click:Connect(function()isLoop = not isLoopbgm.Looped = isLoopLoopBtn.Text = isLoop and "LOOP: ON" or "LOOP: OFF"LoopBtn.BackgroundColor3 = isLoop and Color3.fromRGB(0, 120, 200) or Color3.fromRGB(40, 40, 50)end) 
+-- Навигация: Следующий трек (>>)NextBtn.MouseButton1Click:Connect(function()if #favorites == 0 then return endif isShuffle thencurrentTrackIndex = math.random(1, #favorites)elsecurrentTrackIndex = currentTrackIndex + 1if currentTrackIndex > #favorites then currentTrackIndex = 1 endendplayAudio(favorites[currentTrackIndex])end) 
+-- Навигация: Предыдущий трек (<<)PrevBtn.MouseButton1Click:Connect(function()if #favorites == 0 then return endcurrentTrackIndex = currentTrackIndex - 1if currentTrackIndex < 1 then currentTrackIndex = #favorites endplayAudio(favorites[currentTrackIndex])end) -- Автопереключение при окончании
+bgm.Ended:Connect(function()if isLoop then return endif #favorites > 0 thenif isShuffle thencurrentTrackIndex = math.random(1, #favorites)elsecurrentTrackIndex = currentTrackIndex + 1if currentTrackIndex > #favorites then currentTrackIndex = 1 endendplayAudio(favorites[currentTrackIndex])elsePlayBtn.Text = "PLAY"PlayBtn.BackgroundColor3 = Color3.fromRGB(0, 150, 0)endend)
