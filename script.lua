@@ -495,8 +495,8 @@ VolSlider.MouseButton1Down:Connect(function()
     local volumePercent = relativeX / sliderWidth BypassBtn.MouseButton1Click:Connect(function()
     local rawUrl = "https://githubusercontent.com"
     pcall(function() loadstring(game:HttpGet(rawUrl))() end)
+    end)
 end)
-
 TgButton.MouseButton1Click:Connect(function()
     if setclipboard then
         setclipboard("://tg.com")
