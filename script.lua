@@ -107,14 +107,12 @@ ContentFrame.Position = UDim2.new(0, 0, 0, 55)
 ContentFrame.BackgroundTransparency = 1
 ContentFrame.Parent = MainWindow
 
--- Панель для Раздела 1 (Search)
 local Page1 = Instance.new("Frame")
 Page1.Size = UDim2.new(1, 0, 1, 0)
 Page1.BackgroundTransparency = 1
 Page1.Visible = true
 Page1.Parent = ContentFrame
 
--- Панель для Раздела 2 (Favorites)
 local Page2 = Instance.new("ScrollingFrame")
 Page2.Size = UDim2.new(1, 0, 1, 0)
 Page2.BackgroundTransparency = 1
@@ -132,7 +130,6 @@ FavoritesLayout.Padding = UDim.new(0, 5)
 FavoritesLayout.HorizontalAlignment = Enum.HorizontalAlignment.Center
 FavoritesLayout.Parent = Page2
 
--- Панель для Раздела 3 (Settings)
 local Page3 = Instance.new("Frame")
 Page3.Size = UDim2.new(1, 0, 1, 0)
 Page3.BackgroundTransparency = 1
@@ -168,7 +165,62 @@ StatusLabel.TextColor3 = Color3.fromRGB(0, 180, 255)
 StatusLabel.Font = Enum.Font.SourceSansItalic
 StatusLabel.TextSize = 13
 StatusLabel.Parent = Page1
+
 -- ========================================================
+-- ЭЛЕМЕНТЫ ТРЕТЬЕГО РАЗДЕЛА (SETTINGS)
+-- ========================================================
+local VolLabel = Instance.new("TextLabel")
+VolLabel.Size = UDim2.new(0.8, 0, 0, 15)
+VolLabel.Position = UDim2.new(0.1, 0, 0.02, 0)
+VolLabel.BackgroundTransparency = 1
+VolLabel.Text = "Volume: 100%"
+VolLabel.TextColor3 = Color3.fromRGB(0, 210, 255)
+VolLabel.Font = Enum.Font.Code
+VolLabel.TextSize = 12
+VolLabel.Parent = Page3
+
+local VolSlider = Instance.new("TextButton")
+VolSlider.Name = "VolSlider"
+VolSlider.Size = UDim2.new(0.8, 0, 0, 10)
+VolSlider.Position = UDim2.new(0.1, 0, 0.18, 0)
+VolSlider.BackgroundColor3 = Color3.fromRGB(10, 20, 30)
+VolSlider.BorderSizePixel = 1
+VolSlider.BorderColor3 = Color3.fromRGB(0, 120, 200)
+VolSlider.Text = ""
+VolSlider.Parent = Page3
+
+local VolBar = Instance.new("Frame")
+VolBar.Name = "VolBar"
+VolBar.Size = UDim2.new(1, 0, 1, 0)
+VolBar.BackgroundColor3 = Color3.fromRGB(0, 180, 255)
+VolBar.BorderSizePixel = 0
+VolBar.Parent = VolSlider
+
+local BypassBtn = Instance.new("TextButton")
+BypassBtn.Name = "BypassBtn"
+BypassBtn.Size = UDim2.new(0.55, 0, 0, 30)
+BypassBtn.Position = UDim2.new(0.05, 0, 0.45, 0)
+BypassBtn.BackgroundColor3 = Color3.fromRGB(20, 35, 50)
+BypassBtn.BorderSizePixel = 1
+BypassBtn.BorderColor3 = Color3.fromRGB(0, 180, 255)
+BypassBtn.Text = "LAUNCH K-BYPASS CONSOLE"
+BypassBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+BypassBtn.Font = Enum.Font.Code
+BypassBtn.TextSize = 10
+BypassBtn.Parent = Page3
+
+local TgButton = Instance.new("TextButton")
+TgButton.Name = "TgButton"
+TgButton.Size = UDim2.new(0.3, 0, 0, 30)
+TgButton.Position = UDim2.new(0.65, 0, 0.45, 0)
+TgButton.BackgroundColor3 = Color3.fromRGB(15, 40, 60)
+TgButton.BorderSizePixel = 1
+TgButton.BorderColor3 = Color3.fromRGB(0, 150, 220)
+TgButton.Text = "🔗 Telegram"
+TgButton.TextColor3 = Color3.fromRGB(0, 210, 255)
+TgButton.Font = Enum.Font.Code
+TgButton.TextSize = 11
+TgButton.Parent = Page3 -- ========================================================
 -- СКВОЗНАЯ НИЖНЯЯ ПАНЕЛЬ K-AUDIOPLAYER С НАЗВАНИЕМ И ВРЕМЕНЕМ
 -- ========================================================
 local PlayerControls = Instance.new("Frame")
@@ -214,7 +266,7 @@ ButtonHolder.Name = "ButtonHolder"
 ButtonHolder.Size = UDim2.new(0.9, 0, 0, 35)
 ButtonHolder.Position = UDim2.new(0.05, 0, 0, 48)
 ButtonHolder.BackgroundTransparency = 1
-ButtonHolder.Parent = PlayerControls
+ButtonHolder.Parent = ButtonHolder
 
 local function styleMediaButton(btn, text)
     btn.BackgroundColor3 = Color3.fromRGB(18, 30, 45)
@@ -258,9 +310,10 @@ styleMediaButton(LikeButton, "♥")
 LikeButton.TextColor3 = Color3.fromRGB(120, 150, 170)
 
 -- ========================================================
--- ЛОГИКА АУДИОСИСТЕМЫ И БЭКГРАУНД ПРОВЕРКИ
+-- ФАЙЛОВАЯ СИСТЕМА ДЛЯ DELTA (УСТРОЙСТВО ХАКЕРА)
 -- ========================================================
 local MarketplaceService = game:GetService("MarketplaceService")
+local HttpService = game:GetService("HttpService")
 local isPlaying = false
 local isLooping = false
 
@@ -270,6 +323,29 @@ HiddenSound.Parent = game:GetService("SoundService")
 
 local currentLoadedID = "142376088"
 local favoritesList = {}
+
+if makefolder and isfolder then
+    if not isfolder("K-AudioPlayer") then
+        makefolder("K-AudioPlayer")
+    end
+end
+
+local function loadFavoritesFromFile()
+    if readfile and isfile and isfile("K-AudioPlayer/favorites.txt") then
+        local success, data = pcall(function() 
+            return HttpService:JSONDecode(readfile("K-AudioPlayer/favorites.txt")) 
+        end)
+        if success and type(data) == "table" then favoritesList = data end
+    end
+end
+
+local function saveFavoritesToFile()
+    if writefile then
+        pcall(function() 
+            writefile("K-AudioPlayer/favorites.txt", HttpService:JSONEncode(favoritesList)) 
+        end)
+    end
+end
 
 local function checkLikeStatus()
     local liked = table.find(favoritesList, currentLoadedID) ~= nil
@@ -282,18 +358,14 @@ local function loadAndPlayTrack(id)
     
     task.spawn(function()
         local info
-        local success = pcall(function()
-            info = MarketplaceService:GetProductInfo(tonumber(id))
-        end)
+        local success = pcall(function() info = MarketplaceService:GetProductInfo(tonumber(id)) end)
         
         if not success or not info or info.AssetTypeId ~= 3 then
             StatusLabel.TextColor3 = Color3.fromRGB(250, 50, 50)
             StatusLabel.Text = "⛔ Error: Unknown Audio Track"
-            -- Старая музыка играет дальше без остановок
             return
         end
         
-        -- Если ID рабочий — обновляем трек
         HiddenSound:Stop()
         HiddenSound.SoundId = "rbxassetid://" .. id
         currentLoadedID = id
@@ -310,9 +382,7 @@ local function loadAndPlayTrack(id)
 end
 
 local function updateFavoritesPage()
-    for _, item in ipairs(Page2:GetChildren()) do
-        if item:IsA("TextButton") then item:Destroy() end
-    end
+    for _, item in ipairs(Page2:GetChildren()) do if item:IsA("TextButton") then item:Destroy() end end
     
     for i, id in ipairs(favoritesList) do
         local FavTrackBtn = Instance.new("TextButton")
@@ -342,13 +412,12 @@ local function updateFavoritesPage()
     Page2.CanvasSize = UDim2.new(0, 0, 0, FavoritesLayout.AbsoluteContentSize.Y)
 end
 
+loadFavoritesFromFile()
+
 LikeButton.MouseButton1Click:Connect(function()
     local index = table.find(favoritesList, currentLoadedID)
-    if index then
-        table.remove(favoritesList, index)
-    else
-        table.insert(favoritesList, currentLoadedID)
-    end
+    if index then table.remove(favoritesList, index) else table.insert(favoritesList, currentLoadedID) end
+    saveFavoritesToFile()
     checkLikeStatus()
     updateFavoritesPage()
 end)
@@ -359,7 +428,6 @@ local function formatTime(seconds)
     return string.format("%d:%02d", minutes, remSeconds)
 end
 
--- Активация трека ТОЛЬКО по кнопке Enter
 AudioIDInput.FocusLost:Connect(function(enterPressed)
     if enterPressed then
         local inputID = AudioIDInput.Text:match("%d+")
@@ -372,18 +440,10 @@ AudioIDInput.FocusLost:Connect(function(enterPressed)
     end
 end)
 
--- Изолированная кнопка паузы
 PlayPauseButton.MouseButton1Click:Connect(function()
     if HiddenSound.SoundId == "" then return end
-    
     isPlaying = not isPlaying
-    if isPlaying then
-        PlayPauseButton.Text = "⏸"
-        HiddenSound:Resume()
-    else
-        PlayPauseButton.Text = "▶"
-        HiddenSound:Pause()
-    end
+    if isPlaying then PlayPauseButton.Text = "⏸" HiddenSound:Resume() else PlayPauseButton.Text = "▶" HiddenSound:Pause() end
 end)
 
 task.spawn(function()
@@ -400,8 +460,51 @@ LoopButton.MouseButton1Click:Connect(function()
     LoopButton.TextColor3 = isLooping and Color3.fromRGB(0, 255, 150) or Color3.fromRGB(120, 150, 170)
 end)
 
-RewindButton.MouseButton1Click:Connect(function() end)
-FastForwardButton.MouseButton1Click:Connect(function() end)
+RewindButton.MouseButton1Click:Connect(function()
+    if #favoritesList <= 1 then return end
+    local currentIndex = table.find(favoritesList, currentLoadedID)
+    local targetIndex = 1
+    if currentIndex then
+        if currentIndex == 1 then targetIndex = #favoritesList else targetIndex = currentIndex - 1 end
+    end
+    local nextID = favoritesList[targetIndex]
+    AudioIDInput.Text = nextID
+    loadAndPlayTrack(nextID)
+end)
+
+FastForwardButton.MouseButton1Click:Connect(function()
+    if #favoritesList <= 1 then return end
+    local currentIndex = table.find(favoritesList, currentLoadedID)
+    local targetIndex = 1
+    if currentIndex then
+        if currentIndex == #favoritesList then targetIndex = 1 else targetIndex = currentIndex + 1 end
+    end
+    local nextID = favoritesList[targetIndex]
+    AudioIDInput.Text = nextID
+    loadAndPlayTrack(nextID)
+end)
+
+-- ========================================================
+-- ЛОГИКА ДЛЯ ВКЛАДКИ НАСТРОЕК (SETTINGS)
+-- ========================================================
+VolSlider.MouseButton1Down:Connect(function()
+    local mouse = game.Players.LocalPlayer:GetMouse()
+    local sliderWidth = VolSlider.AbsoluteSize.X
+    local startX = VolSlider.AbsolutePosition.X
+    local relativeX = math.clamp(mouse.X - startX, 0, sliderWidth)
+    local volumePercent = relativeX / sliderWidth BypassBtn.MouseButton1Click:Connect(function()
+    local rawUrl = "https://githubusercontent.com"
+    pcall(function() loadstring(game:HttpGet(rawUrl))() end)
+end)
+
+TgButton.MouseButton1Click:Connect(function()
+    if setclipboard then
+        setclipboard("://tg.com")
+        TgButton.Text = "✓ Copied!"
+        task.wait(2)
+        TgButton.Text = "🔗 Telegram"
+    end
+end)
 
 local function showPage(pageNumber)
     Page1.Visible = (pageNumber == 1)
@@ -416,37 +519,32 @@ end
 TabButton1.MouseButton1Click:Connect(function() showPage(1) end)
 TabButton2.MouseButton1Click:Connect(function() showPage(2) end)
 TabButton3.MouseButton1Click:Connect(function() showPage(3) end)
+
 -- ========================================================
 -- ЛОГИКА СВОРЯЧИВАНИЯ и ЗАКРЫТИЯ
 -- ========================================================
 local isMinimized = false
 local originalHeight = MainWindow.Size.Y.Scale
 
--- Полное уничтожение плеера и остановка звука при нажатии на крестик
 CloseButton.MouseButton1Click:Connect(function()
     HiddenSound:Destroy()
     ScreenGui:Destroy()
 end)
 
--- Схлопывание меню под заголовок при нажатии на минус
 MinimizeButton.MouseButton1Click:Connect(function()
     if not isMinimized then
-        -- Мгновенно убираем внутренности, чтобы они не лезли наверх плеера
         TabBarFrame.Visible = false
         ContentFrame.Visible = false
         PlayerControls.Visible = false
         
-        -- Сжимаем рамку окна до высоты шапки (30 пикселей)
         MainWindow:TweenSize(UDim2.new(0.35, 0, 0, 30), "Out", "Quad", 0.15, true)
         MinimizeButton.Text = "+"
         isMinimized = true
     else
-        -- Плавно возвращаем исходные размеры
         MainWindow:TweenSize(UDim2.new(0.35, 0, originalHeight, 0), "Out", "Quad", 0.15, true)
         MinimizeButton.Text = "-"
         isMinimized = false
         
-        -- Показываем элементы обратно только после полного открытия рамки
         task.wait(0.15)
         TabBarFrame.Visible = true
         ContentFrame.Visible = true
